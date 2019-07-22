@@ -1,4 +1,5 @@
 import pygame
+
 pygame.init()
 
 #Get display size
@@ -9,7 +10,7 @@ width, height = pygame.display.Info().current_w, pygame.display.Info().current_h
 window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
 #Window Name
-pygame.display.set_caption("testy.io")
+pygame.display.set_caption("Learn.io")
 
 #Load Images, Fonts, etc
 bkg = pygame.image.load('gridBKG.jpg')
@@ -24,7 +25,8 @@ titleColour = (50, 195, 230)
 black = (0,0,0)
 darkGrey = (50,50,50)
 lightGrey = (120,120,120)
-white = (255,255,255)
+white = (255,255,255)   
+yellow = (255, 255, 0)
 
 
 def game_menu():
@@ -49,6 +51,7 @@ def game_menu():
         
     window.blit(title, (width/3,height/4)) 
     
+    #Don't think PEMDAS/BODMAS look at what it is doing
     playGameCenter = playGame.get_rect(center=( buttonX+buttonWidth/2, buttonY+buttonHeight/2) )
     quitGameCenter = quitGame.get_rect(center=( buttonX+buttonWidth/2, buttonY+buttonHeight+120/2) )
     singleplayerCenter = singleplayer.get_rect(center=( buttonX+buttonWidth/2, buttonY+buttonHeight/2) )
@@ -86,6 +89,7 @@ def game_menu():
                 if (mouse_press[0] == 1):
                     singleplayerGame()
                     display_menu = False
+                    break
             else:
                 pygame.draw.rect(window, black, topButton)
                 window.blit(singleplayer, singleplayerCenter)
@@ -106,8 +110,89 @@ def game_menu():
                     
         pygame.display.update()
         
+def initializeGame(gameType):
+    
+    running = True
+    
+    #Clear all previous blits
+    window.blit(bkg, (0,0))
+    #Black Background as 'Page'
+    pageX = width/4
+    pageY = height/6
+    pageWidth = width-(2*pageX)
+    pageHeight = height-(2*pageY)
+    
+    pageSize = (pageX, pageY, pageWidth, pageHeight)
+    
+    #User Input - Player Name
+    enterName = font.render('Enter Name:', True, titleColour)
+    enterNamePos = enterName.get_rect(center=( pageX+pageWidth/2, pageY+pageHeight/6) )
+    
+    name = ""
+    playerName = font.render(name, True, titleColour)
+    #User Input - Text Box
+    inputBoxX = width / 2.9
+    inputBoxY = height / 2.5
+    inputBoxWidth = 600
+    inputBoxHeight = 100
+    
+    inputBoxSize = (inputBoxX, inputBoxY, inputBoxWidth, inputBoxHeight)
+    inputBoxCenter = playerName.get_rect(center=( inputBoxX+inputBoxWidth/2, inputBoxY+inputBoxHeight/2) )
+    
+    #Play Game Text & Button
+    playGame = font.render('Play', True, titleColour)
+    playGameCenter = playGame.get_rect(center=( pageX+pageWidth/2, pageHeight-pageY/2) )
+    playGameBox = (pageX+(pageWidth/4),pageHeight-pageY/2 - 45,(pageWidth/2),90)
+    
+    #Drawing on Page
+    pygame.draw.rect(window,black,pageSize)
+    window.blit(enterName, enterNamePos)        
+    pygame.draw.rect(window,white,playGameBox, 1)
+    
+    if(gameType == "sp"):
+        while running:
+            pygame.time.delay(100)
+            
+            mouse_pos  = pygame.mouse.get_pos()
+            mouse_press = pygame.mouse.get_pressed()
+            #keyPress = pygame.key.get_pressed()
+            
+            pygame.draw.rect(window,white,inputBoxSize)
+            
+            playerName = font.render(name, True, titleColour)
+            inputBoxCenter = playerName.get_rect(center=( (inputBoxX+inputBoxWidth/2)-len(name), inputBoxY+inputBoxHeight/2) )
+            window.blit(playerName, inputBoxCenter)
+            
+       
+            
+                 
+            if pageX+(pageWidth/4) < mouse_pos[0] < pageX+(pageWidth/1.33) and pageHeight-pageY/2 -45  < mouse_pos[1] < pageHeight-pageY/2 + 45 :
+                playGame = font.render('Play', True, yellow)
+                window.blit(playGame, playGameCenter)
+                if (mouse_press[0] == 1):
+                    return name[:32]
+            else:
+                playGame = font.render('Play', True, titleColour)
+                window.blit(playGame, playGameCenter)
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == 8:          # For some reason, K_BACKSPACE wasn't working so using 8 instead
+                        name = name[:-1]
+                    else:
+                        name = name + event.unicode
+                        #print(event.key)
+                
+            pygame.display.update()
+    
+    return name[:32]
 def singleplayerGame():
     window.blit(bkg, (0,0))
+    playerName = initializeGame("sp")
+    print("success ",playerName)
+    
     
     
 def multiplayerGame():
@@ -149,4 +234,6 @@ while run:
     pygame.display.update()
 '''
 game_menu() 
+pygame.display.quit()
 pygame.quit()
+exit()
