@@ -198,41 +198,6 @@ def singleplayerGame():
 def multiplayerGame():
     print("To Do")
     
-'''
-x = 500
-y = 500
-
-radius = 50
-vel = 5
-
-run = True
-
-while run:
-    pygame.time.delay(1)
-    
-    keyPress = pygame.key.get_pressed()
-    
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-    
-    if keyPress[pygame.K_LEFT] and (x-radius) > vel:
-            x -= vel
-    if keyPress[pygame.K_RIGHT] and (x+radius+vel) < infoObject.current_w:
-            x += vel
-    if keyPress[pygame.K_UP] and y-radius > vel:
-        y -= vel
-    if keyPress[pygame.K_DOWN] and (y+radius) < infoObject.current_h:
-        y += vel
-    
-    
-    
-    window.blit(bkg, (0,0))
-    pygame.draw.circle(window, (90,90,255), (x, y), radius, 10)
-    pygame.draw.circle(window, (150,150,255), (x, y), radius-10, 0)
-    
-    pygame.display.update()
-'''
 game_menu() 
 pygame.display.quit()
 pygame.quit()
