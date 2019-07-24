@@ -1,4 +1,5 @@
 import pygame
+import random
 
 pygame.init()
 
@@ -16,6 +17,8 @@ pygame.display.set_caption("Learn.io")
 bkg = pygame.image.load('gridBKG.jpg')
 titleFont = pygame.font.Font('fonts/nemoy/NemoyMedium.otf', 132)
 font = pygame.font.Font('fonts/nemoy/NemoyLight.otf', 70)
+clockFont = pygame.font.Font('fonts/nemoy/NemoyBold.otf', 25)
+leaderboardFont = pygame.font.Font('fonts/nemoy/NemoyLight.otf', 40)
 
 #Draw Background Once
 window.blit(bkg, (0,0))
@@ -155,7 +158,6 @@ def initializeGame(gameType):
             
             mouse_pos  = pygame.mouse.get_pos()
             mouse_press = pygame.mouse.get_pressed()
-            #keyPress = pygame.key.get_pressed()
             
             pygame.draw.rect(window,white,inputBoxSize)
             
@@ -163,14 +165,12 @@ def initializeGame(gameType):
             inputBoxCenter = playerName.get_rect(center=( (inputBoxX+inputBoxWidth/2)-len(name), inputBoxY+inputBoxHeight/2) )
             window.blit(playerName, inputBoxCenter)
             
-       
-            
-                 
             if pageX+(pageWidth/4) < mouse_pos[0] < pageX+(pageWidth/1.33) and pageHeight-pageY/2 -45  < mouse_pos[1] < pageHeight-pageY/2 + 45 :
                 playGame = font.render('Play', True, yellow)
                 window.blit(playGame, playGameCenter)
                 if (mouse_press[0] == 1):
-                    return name[:32]
+                    #startLeaderboard()
+                    running = False
             else:
                 playGame = font.render('Play', True, titleColour)
                 window.blit(playGame, playGameCenter)
@@ -188,17 +188,124 @@ def initializeGame(gameType):
             pygame.display.update()
     
     return name[:32]
+
 def singleplayerGame():
-    window.blit(bkg, (0,0))
-    playerName = initializeGame("sp")
-    print("success ",playerName)
+    random.seed()
     
+    #Player Details
+    playerPosX = random.randint(0,width)
+    playerPosY = random.randint(0,height)
+    randomR = random.randint(0,255)
+    randomG = random.randint(0,255)
+    randomB = random.randint(0,255)
+    playerColour = (randomR,randomG,randomB)
+    
+    initialSize = 40
+    velocity = 10
+    shootMass = False
+    
+    #Food Details
+    totalFood = 100
+    foodSize = 5
+    foodX = []
+    foodY = []
+    foodColour = []
+    for i in range(0,totalFood):
+        foodX.append(random.randint(0,width))
+        foodY.append(random.randint(0,height))
+        foodColour.append( (random.randint(0,255),random.randint(0,255),random.randint(0,255)) )
+        
+    #Virus Details
+    totalVirus = 10
+    virusSize = 30
+    virusX = []
+    virusY = []
+    virusColour = [0,255,0]
+    for i in range(0,totalVirus):
+        virusX.append(random.randint(0,width))
+        virusY.append(random.randint(0,height))
+    
+    
+    #Game Details
+    window.blit(bkg, (playerPosX,playerPosY))
+    playerName = initializeGame("sp")
+    print('Successfully Initialized Player "',playerName,'"')
+    initialTime = 120 #seconds
+    gameLoop = True 
+    
+    
+    while gameLoop:
+        #Start Loop, set bkg stuff
+        pygame.time.delay(1)
+        pygame.time.Clock().tick(120)
+        window.blit(bkg, (0,0))#playerPosX,playerPosY))
+        
+        #IO stuff
+        keypress = pygame.key.get_pressed()
+        mousePos = pygame.mouse.get_pos()
+        
+        #Movement Logic (Expand to 8 octets from current 4 quarters for smoother movement)
+        if mousePos[0] < playerPosX:
+            playerPosX -= velocity
+        if mousePos[0] > playerPosX:
+            playerPosX += velocity
+        if mousePos[1] < playerPosY:
+            playerPosY -= velocity
+        if mousePos[1] > playerPosY:
+            playerPosY += velocity
+        
+        #Collision Logic
+            #Food
+            #Virus
+        
+        #Shoot Mass
+        if shootMass == True:
+            shootMass = False
+            initialSize -= 1
+            
+            print("TO DO - Shoot Mass")
+            
+        #Split Player
+        
+      
+        #Draw Food
+        for i in range(0,totalFood):
+            pygame.draw.circle(window,foodColour[i],(foodX[i],foodY[i]),foodSize)
+            
+        #Draw Virus
+        for i in range(0,totalVirus):
+            pygame.draw.circle(window,virusColour,(virusX[i],virusY[i]),virusSize)
+            
+        #Draw User
+        pygame.draw.circle(window,playerColour,(playerPosX,playerPosY),initialSize)
+        
+        
+        #Clock
+        timeLeft = str(int(initialTime)) + " secs"
+        initialTime -= 0.01
+        timer = clockFont.render(timeLeft, True, black)
+        window.blit(timer, (0,0))        
+         
+        #Leaderboard
+
+           
+        for event in pygame.event.get():
+            print(event)
+            if event.type == pygame.QUIT:
+                gameLoop = False
+            
+            if event.type == pygame.KEYDOWN:
+                if keypress[pygame.K_w]:
+                    shootMass = True
+                if keypress[pygame.K_SPACE]:
+                    print("Implement Splitting")
+                    
+        pygame.display.update()
     
     
 def multiplayerGame():
     print("To Do")
     
-game_menu() 
-pygame.display.quit()
+game_menu()
 pygame.quit()
 exit()
